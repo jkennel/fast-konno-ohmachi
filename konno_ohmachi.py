@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 '''
 [Description]
-    This module performs Konno-Ohmachi smoothing very fast. 
+    This module performs Konno-Ohmachi smoothing very fast.
 
-    It has pre-calculated smoothing window values built-in, thus 
-    circumventing the need to re-calculate "w" every time. Compared to 
+    It has pre-calculated smoothing window values built-in, thus
+    circumventing the need to re-calculate "w" every time. Compared to
     ordinary Konno-Ohmachi smoothing algorithms, this module is ~50% faster.
 
 [References]
     The formula of Konno-Ohmachi smoothing window is here:
         http://www.geopsy.org/wiki/index.php/Smoothing_details
-    
-    Original paper: 
-        K. Konno & T. Ohmachi (1998) "Ground-motion characteristics estimated 
-        from spectral ratio between horizontal and vertical components of 
+
+    Original paper:
+        K. Konno & T. Ohmachi (1998) "Ground-motion characteristics estimated
+        from spectral ratio between horizontal and vertical components of
         microtremor." Bulletin of the Seismological Society of America.
         Vol.88, No.1, 228-241.
-        
+
         Abstract:
             http://www.bssaonline.org/content/88/1/228.short
-        K. Konno's own PDF copy: 
+        K. Konno's own PDF copy:
             http://www.eq.db.shibaura-it.ac.jp/papers/Konno&Ohmachi1998.pdf
 
 Copyright (c) 2013-2017, Jian Shi
 '''
 
+import sys
 import numpy as np
 
 # ==============================================================================
@@ -37,23 +38,22 @@ def fast_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
         smooth_coeff: A parameter determining the degree of smoothing.
                       The lower this parameter, the more the signal
                       is smoothed.
-                      Only even integers between 2 and 100 are allowed, 
+                      Only even integers between 2 and 100 are allowed,
                       Out-of-range values are "capped" or "cupped";
                       non-integer values are rounded.
         progress_bar: Whether or not to print a progress bar.
-        
+
           (Note: "raw_signal" and "freq_array" can be Python lists, 1D numpy
                  arrays, or 2D 1-column/1-row arrays. The data type affects the
                  running time. For optimum speed, use 1D numpy array as input.)
     [Output]
         y: Smoothed signal (1D numpy array).
     '''
-    import sys
 
     x = raw_signal  # shorten variable names...
     f = freq_array
     b = smooth_coeff
-    
+
     if round(b) != b:
         b = round(b)   # round non integers
     if np.remainder(b,2) == 1:  # if b is odd
@@ -62,11 +62,11 @@ def fast_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
         b = 2  # "cup" b value
     if b > 100:
         b = 100  # "cap" b value
-    
+
     if len(x) != len(f):
-        print 'Length of input signal and frequency array must be the same.'
+        print('Length of input signal and frequency array must be the same.')
         sys.exit()
-        
+
     L = len(x)
     y = np.zeros(L)  # pre-allocation of smoothed signal
 
@@ -78,36 +78,36 @@ def fast_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
                           # [Note: "int(b/2.0)-1" has "-1" because row index
                           #        in Python starts from 0]
     ref_z = np.arange(0.5,2.001,0.001)  # equivalent to 0.5:0.001:2 in MATLAB
-    
+
     if progress_bar == True:
         progress_bar_width = 40  # width of progress bar (40 characters)
-        print '\n|------------    Progress    ------------|' # reference bar
+        print('\n|------------    Progress    ------------|') # reference bar
         sys.stdout.write('|')
-    
+
     # =======  Moving window smoothing: fc from f[1] to f[-2]  ========
     for i in range(L):
         if progress_bar and (np.remainder(i,L/progress_bar_width) == 0):
             sys.stdout.write('|')  # prints "|" without spaces or new lines
-    
+
         if (i == 0) or (i == L-1):
             continue  # skip first and last indices for now
-    
+
         fc = f[i]  # central frequency
         w = np.zeros(L)  # pre-allocation of smoothing window "w"
-        
+
         z = f / fc  # "z" = dimensionless frequency, normalized by fc
         z = z[np.where(z >= 0.5)]  # only keep elements between 0.5 and 2.0,
         z = z[np.where(z <= 2.0)]  # because outsize [0.5, 2.0], w is almost 0
-        
+
         w0 = np.interp(z,ref_z,ref_array)  # 1D interpolation
               # Note: In practice, w is almost 0 when z (normalized frequency)
               #       is outside [0.5, 2.0].  Thus only the non-zero part of
               #       "w", i.e., "w0", is calculated via interpolation.
               #       Then, "w" is reconstructed from "w0" by padding zeros.
-              
+
         idx = np.argmax(w0) # the index where w0 has maximum value
         shift = i+1 - idx # i+1 = "true index" (starting from 1 rather than 0)
-        w0 = np.lib.pad(w0,(shift,0),mode='constant',constant_values=(0)) 
+        w0 = np.lib.pad(w0,(shift,0),mode='constant',constant_values=(0))
                   # shift w0 to the right by "shift", and pad zeros in front
         if len(w0) >= len(w):  # if length of w0 already exceeds w
             w = w0[0:len(w)]  # trim w0 down to the same length as w
@@ -118,20 +118,20 @@ def fast_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
 
     y[0] = y[1]  # calculate first and last indices
     y[-1] = y[-2]
-    
+
     if progress_bar:
         sys.stdout.write('|\n')
-    
+
     return y
 
 # ==============================================================================
 def slow_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
     '''
-    NOTE: This is the "ordinary" algorithm where the smoothing window is 
+    NOTE: This is the "ordinary" algorithm where the smoothing window is
           calculated directly. Thus it is slow.
           There is no need to use this function except to test
           the correctness of "fast_konno_ohmachi".
-    
+
     [Inputs]
         raw_signal: Signal to be smoothed in frequency domain.
         freq_array: Frequency array corresponding to the signal.
@@ -140,54 +140,53 @@ def slow_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
                       The lower this parameter, the more the signal
                       is smoothed.
         progress_bar: Whether or not to print a progress bar.
-        
+
           (Note: "raw_signal" and "freq_array" can be Python lists, 1D numpy
                  arrays, or 2D 1-column/1-row arrays. The data type affects the
                  running time. For optimum speed, use 1D numpy array as input.)
     [Output]
         y: Smoothed signal (1D numpy array).
     '''
-    import sys
 
     x = raw_signal  # shorten variable names...
     f = freq_array
     b = float(smooth_coeff)
-        
+
     if len(x) != len(f):
-        print 'Length of input signal and frequency array must be the same.'
+        print('Length of input signal and frequency array must be the same.')
         sys.exit()
-        
+
     L = len(x)
     y = np.zeros(L)  # pre-allocation of smoothed signal
 
     if progress_bar == True:
         progress_bar_width = 40  # width of progress bar (40 characters)
-        print '\n|------------    Progress    ------------|' # reference bar
+        print('\n|------------    Progress    ------------|') # reference bar
         sys.stdout.write('|')
-    
+
     # =======  Moving window smoothing: fc from f[1] to f[-2]  ========
     for i in range(L):
         if progress_bar and (np.remainder(i,L/progress_bar_width) == 0):
             sys.stdout.write('|')  # prints "|" without spaces or new lines
-    
+
         if (i == 0) or (i == L-1):
             continue  # skip first and last indices for now
-    
+
         fc = f[i]  # central frequency
         w = np.zeros(L)  # pre-allocation of smoothing window "w"
         
         z = f / fc  # "z" = dimensionless frequency, normalized by fc
         w = (np.sin(b * np.log10(z)) / b / np.log10(z)) ** 4.0
         w[np.isnan(w)] = 0  # replace NaN's with 0
-        
+
         y[i] = np.dot(w,x) / np.sum(w)  # apply smoothing filter to "x"
 
     y[0] = y[1]  # calculate first and last indices
     y[-1] = y[-2]
-    
+
     if progress_bar:
         sys.stdout.write('|\n')
-    
+
     return y
 
 # ==============================================================================

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
 This Python script uses fast_konno_ohmachi to smooth a sample Fourier spectrum.
-To demonstrate the benefit of Konno-Ohmachi smoothing, we also smooth the 
+To demonstrate the benefit of Konno-Ohmachi smoothing, we also smooth the
 raw signal with a median filter, and plot both results.
 
 The raw signal used in this example is the Fourier amplitude spectrum of a
@@ -28,7 +28,7 @@ spec = np.ndarray.flatten(spec)  # flatten array such that shape = (15000L,)
 start_time = time.time()
 y1 = konno_ohmachi.fast_konno_ohmachi(spec,freq,progress_bar=True)
 end_time = time.time()
-print '\nElapsed time (fast_konno-ohmachi): %.1f sec.' % (end_time - start_time)
+print('\nElapsed time (fast_konno-ohmachi): %.1f sec.' % (end_time - start_time))
 
 y2 = scipy.signal.medfilt(np.ndarray.flatten(spec),kernel_size=201)
 
