@@ -150,6 +150,7 @@ def slow_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
 
     x = raw_signal  # shorten variable names...
     f = freq_array
+    f_shifted = f/(1+1e-4)  # shift slightly to avoid numerical errors
     b = float(smooth_coeff)
 
     if len(x) != len(f):
@@ -174,8 +175,8 @@ def slow_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
 
         fc = f[i]  # central frequency
         w = np.zeros(L)  # pre-allocation of smoothing window "w"
-        
-        z = f / fc  # "z" = dimensionless frequency, normalized by fc
+
+        z = f_shifted / fc  # "z" = dimensionless frequency, normalized by fc
         w = (np.sin(b * np.log10(z)) / b / np.log10(z)) ** 4.0
         w[np.isnan(w)] = 0  # replace NaN's with 0
 
