@@ -8,7 +8,7 @@ For lower frequencies, the Konno-Ohmachi smoothing window is narrower (i.e., les
 
 The figure below shows the result of Konno-Ohmachi filter versus a "conventional" median value filter [[Wiki](https://en.wikipedia.org/wiki/Median_filter)]. The two filters yield similar results for frequency > 5 Hz, but for lower frequencies, the median filter over-smoothes the raw spectrum, which is undesirable.
 
-![](https://github.com/jsh9/fast-konno-ohmachi/blob/master/demo.png)
+![](demo.png)
 ###### (The raw signal used in this example is the Fourier amplitude spectrum of a ground acceleration waveform recorded during 2011/3/11 Magnitude-9.0 Tohoku-Oki Earthquake.)
 
 ## Computation speed
@@ -25,7 +25,7 @@ new_spectrum = konno_ohmachi.fast_konno_ohmachi(spectrum,freq,smooth_coeff=40,pr
 `Demo_konno_ohmachi_smooth.py` is a Python script that demonstrates how to use the module, and plots the figure you see above.
 
 ## Dependencies
-`konno_ohmachi.py` only dependes on Numpy 1.11.0+.
+`konno_ohmachi.py` only dependes on Numpy 1.11.0+; works for both Python 2.7 and Python 3+.
 
 In order to run `Demo_konno_ohmachi_smooth.py`, you also need Scipy 0.17.1+, and Matplotlib 1.5.1+.
 
