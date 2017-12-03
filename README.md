@@ -40,12 +40,13 @@ See `Demo_konno_ohmachi_smooth.py` for more detailed examples.
 
 ## Notes on parallel computing
 
-The `faster_konno_ohmachi()` function uses multiple CPU cores, but it is not necessarily faster than `fast_konno_ohmachi()`, because the data I/O between the CPU cores takes extra time ("computation overhead"). Below is a benchmarking of the running time for input signals with different length:
+1. When using `faster_konno_ohmachi()`, the user should to protect the main script with `if __name__ == '__main__'` (see the demo script). This is **mandatory** for Windows, and **highly recommended** for Mac/Linux.
+2. The `faster_konno_ohmachi()` function uses multiple CPU cores, but it is not necessarily faster than `fast_konno_ohmachi()`, because the data I/O between the CPU cores takes extra time ("computation overhead"). Below is a benchmarking of the running time for input signals with different length:
 
-| Length of  signal (x1000) | 1 | 3 | 5 | 7 | 9 | 11 | 13 | 15 | 17 | 19   | 21   | 23    | 25    | 27    | 29    | 31    |
-| ------------------------- | ---- | ---- | ---- | ---- | ---- | ----- | ----- | ----- | ----- | ------- | ------- | -------- | -------- | -------- | -------- | -------- |
-| Time of "fast" (sec)      | 0.1  | 0.4  | 0.9  | 1.5  | 2.2  | 3.3   | 4.4   | 5.4   | 6.8   | 8.1 | 9.6 | 11.2 | 13.1 | 14.9 | 16.7 | 18.8 |
-| Time of "faster" (sec)    | 2.4  | 2.4  | 2.8  | 3.0  | 3.3  | 3.9   | 4.1   | 4.6   | 4.9   | 5.5 | 5.8 | 6.7  | 7.5  | 8.2  | 9.0  | 9.8  |
+| Length of  signal (x1000) | 1    | 3    | 5    | 7    | 9    | 11   | 13   | 15   | 17   | 19   | 21   | 23   | 25   | 27   | 29   | 31   |
+| ------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| Time of "fast" (sec)      | 0.1  | 0.4  | 0.9  | 1.5  | 2.2  | 3.3  | 4.4  | 5.4  | 6.8  | 8.1  | 9.6  | 11.2 | 13.1 | 14.9 | 16.7 | 18.8 |
+| Time of "faster" (sec)    | 2.4  | 2.4  | 2.8  | 3.0  | 3.3  | 3.9  | 4.1  | 4.6  | 4.9  | 5.5  | 5.8  | 6.7  | 7.5  | 8.2  | 9.0  | 9.8  |
 
 
 Or as shown in this figure:
