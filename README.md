@@ -42,9 +42,9 @@ See `Demo_konno_ohmachi_smooth.py` for more detailed examples.
 
 The `faster_konno_ohmachi()` function uses multiple CPU cores, but it is not necessarily faster than `fast_konno_ohmachi()`, because the data I/O between the CPU cores takes extra time ("computation overhead"). Below is a benchmarking of the running time for input signals with different length:
 
-```
+
 | Length of signal | Time ("fast")  | Time ("faster")  |
-| ---------------- |:--------------:| ----------------:|
+|:----------------:|:--------------:|:----------------:|
 |     1000         |    0.1 sec     |     2.4 sec      |
 |     3000         |    0.4 sec     |     2.4 sec      |
 |     5000         |    0.9 sec     |     2.8 sec      |
@@ -61,7 +61,7 @@ The `faster_konno_ohmachi()` function uses multiple CPU cores, but it is not nec
 |     27000        |   14.9 sec     |     8.2 sec      |
 |     29000        |   16.7 sec     |     9.0 sec      |
 |     31000        |   18.8 sec     |     9.8 sec      |
-```
+
 
 Or as shown in this figure:
 
