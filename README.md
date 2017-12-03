@@ -12,19 +12,63 @@ The figure below shows the result of Konno-Ohmachi filter versus a "conventional
 ###### (The raw signal used in this example is the Fourier amplitude spectrum of a ground acceleration waveform recorded during 2011/3/11 Magnitude-9.0 Tohoku-Oki Earthquake.)
 
 ## Computation speed
-Konno-Ohmachi filter is time-consuming due to varying window widths. This module has pre-calculated smoothing window values built-in, which, compared to other ordinary Konno-Ohmachi smoothers, reduces the calculation time by ~60% (hence the "fast" in the module name).
+Konno-Ohmachi filter is time-consuming due to varying window widths. This module stores pre-calculated smoothing window values, which, compared to other ordinary Konno-Ohmachi smoothers, reduces the calculation time by ~60% (hence the "fast" in the module name).
+
+## Subroutines
+
+This module has three subroutines:
+
++ `fast_konno_ohmachi()`: the "fast" method, using single CPU core;
++ `faster_konno_ohmachi()`: the "faster" method, using multiple CPU cores;
++ `slow_konno_ohmachi()`: the "slow" method, which does not use pre-calculated smoothing window.
 
 ## How to use this module
 Put `konno_ohmachi.py` in your Python search path. Then,
 
 ```python
-import konno_ohmachi
-new_spectrum = konno_ohmachi.fast_konno_ohmachi(spectrum,freq,smooth_coeff=40,progress_bar=True)
+import konno_ohmachi as ko
+smoothed = ko.fast_konno_ohmachi(spectrum,freq,smooth_coeff=40,progress_bar=True)
 ```
 
-`Demo_konno_ohmachi_smooth.py` is a Python script that demonstrates how to use the module, and plots the figure you see above.
+or (the "faster" function, using multiple CPU cores):
+
+```{python}
+smoothed = ko.faster_konno_ohmachi(spectrum,freq,smooth_coeff=40,n_cores=4)
+```
+
+See `Demo_konno_ohmachi_smooth.py` for more detailed examples.
+
+## Notes on parallel computing
+
+The `faster_konno_ohmachi()` function uses multiple CPU cores, but it is not necessarily faster than `fast_konno_ohmachi()`, because the data I/O between the CPU cores takes extra time ("computation overhead"). Below is a benchmarking of the running time for input signals with different length:
+
+```
+| Length of signal | Time ("fast")  | Time ("faster")  |
+| ---------------- |:--------------:| ----------------:|
+|     1000         |    0.1 sec     |     2.4 sec      |
+|     3000         |    0.4 sec     |     2.4 sec      |
+|     5000         |    0.9 sec     |     2.8 sec      |
+|     7000         |    1.5 sec     |     3.0 sec      |
+|     9000         |    2.2 sec     |     3.3 sec      |
+|     11000        |    3.3 sec     |     3.9 sec      |
+|     13000        |    4.4 sec     |     4.1 sec      |
+|     15000        |    5.4 sec     |     4.6 sec      |
+|     17000        |    6.8 sec     |     4.9 sec      |
+|     19000        |    8.1 sec     |     5.5 sec      |
+|     21000        |    9.6 sec     |     5.8 sec      |
+|     23000        |   11.2 sec     |     6.7 sec      |
+|     25000        |   13.1 sec     |     7.5 sec      |
+|     27000        |   14.9 sec     |     8.2 sec      |
+|     29000        |   16.7 sec     |     9.0 sec      |
+|     31000        |   18.8 sec     |     9.8 sec      |
+```
+
+Or as shown in this figure:
+
+![](./benchmark.png)
 
 ## Dependencies
+
 `konno_ohmachi.py` only dependes on Numpy 1.11.0+; works for both Python 2.7 and Python 3+.
 
 In order to run `Demo_konno_ohmachi_smooth.py`, you also need Scipy 0.17.1+, and Matplotlib 1.5.1+.
