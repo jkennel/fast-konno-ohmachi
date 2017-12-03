@@ -32,7 +32,7 @@ smoothed = ko.fast_konno_ohmachi(spectrum,freq,smooth_coeff=40,progress_bar=True
 
 or (the "faster" function, using multiple CPU cores):
 
-```{python}
+```python
 smoothed = ko.faster_konno_ohmachi(spectrum,freq,smooth_coeff=40,n_cores=4)
 ```
 
