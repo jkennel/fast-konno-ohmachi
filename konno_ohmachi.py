@@ -39,8 +39,9 @@ def fast_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,progress_bar=True):
                       The lower this parameter, the more the signal
                       is smoothed.
                       Only even integers between 2 and 100 are allowed,
-                      Out-of-range values are "capped" or "cupped";
-                      non-integer values are rounded.
+                      Out-of-range values are constraint to [2,100].
+                      Non-integer values are rounded. Odd integers are
+                      implicitly converted to even integers.
         progress_bar: Whether or not to print a progress bar.
 
           (Note: "raw_signal" and "freq_array" can be Python lists, 1D numpy
@@ -135,8 +136,9 @@ def faster_konno_ohmachi(raw_signal,freq_array,smooth_coeff=40,n_cores=None):
                       The lower this parameter, the more the signal
                       is smoothed.
                       Only even integers between 2 and 100 are allowed,
-                      Out-of-range values are "capped" or "cupped";
-                      non-integer values are rounded.
+                      Out-of-range values are constraint to [2,100].
+                      Non-integer values are rounded. Odd integers are
+                      implicitly converted to even integers.
         n_cores: Number of parallel cores (processes) you want to use.
 
           (Note: "raw_signal" and "freq_array" can be Python lists, 1D numpy
