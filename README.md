@@ -61,9 +61,9 @@ In order to run `Demo_konno_ohmachi_smooth.py`, you also need Scipy 0.17.1+, and
 
 
 ## Limitations
-`fast_konno_ohmachi` only supports even integers between [2,100] as eligible smoothing coefficient (i.e., "b"). Out-of-range values, odd integers, and/or decimal numbers will be "cupped"/"capped" within [2,100] and rounded to an even integer.
+`fast_konno_ohmachi` only supports **even integers** between [2,100] as eligible smoothing coefficient (i.e., "b"). Out-of-range values, odd integers, and/or decimal numbers will be constraint within [2,100] and rounded to an even integer.
 
 This is merely to reduce the file size of the source code (because smoothing windows are pre-calculated and hard-coded into the source). In practice, b values outside of [2,100] are very rarely used.
 
 ## License
-Copyright (c) 2013-2017, Jian Shi. See LICENSE.txt file for details.
+Copyright (c) 2013-2018, Jian Shi. See LICENSE.txt file for details.
